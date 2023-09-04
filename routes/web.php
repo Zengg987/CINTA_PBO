@@ -25,6 +25,7 @@ Route::get('/profile', [homeController::class, 'profile']);
 Route::post('/register', [homeController::class, 'registerPost']);
 Route::post('/login', [loginController::class, 'login']);
 Route::get('/logout', [loginController::class, 'logout']);
+Route::get('/getberita', [homeController::class, 'getBerita']);
 
 // jika sudah login, maka ini route akan bisa diakses, kalo ndk login ya sudahlah
 Route::middleware(['auth'])->group(function(){
@@ -33,6 +34,8 @@ Route::middleware(['auth'])->group(function(){
     Route::post('/user/simpan',[homeController::class, 'userPost']);
     Route::get('/user/edit/{id}',[homeController::class, 'userEdit']);
     Route::delete('/user/hapus/{id}',[homeController::class, 'userHapus']);
+    Route::get('/profile/edit', [homeController::class, 'profileEditShow']);
+    Route::post('/user/profileSimpan/', [homeController::class, 'userBioSimpan']);
 
     Route::get('/berita',[beritaController::class, 'index']);
     Route::post('/berita/simpan',[beritaController::class, 'beritaSimpan']);

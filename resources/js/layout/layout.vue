@@ -210,7 +210,6 @@
 <script>
 import { ref, reactive } from "vue";
 import { router } from "@inertiajs/vue3";
-import { list } from "postcss";
 
 export default {
     props: {

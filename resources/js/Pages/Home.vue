@@ -3,23 +3,12 @@
         <div class="q-mx-xl" style="max-width: 1300px; margin: 0 auto;">
             <div class="row q-col-gutter-md">
                 <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
-                    <q-card flat bordered>
-                        <img src="https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg" alt="tau">
+                    <q-card flat v-for="b1 in berita1" :key="b1" >
+                        <img  :src="'/storage/' + b1.gambar" alt="tau">
                         <q-card-section>
-                            <div class="text-h6">Lorem ipsum</div>
+                            <div class="text-h6">{{ b1.judul }}</div>
                             <div>
-                                Lorem ipsum, dolor sit amet consectetur adipisicing elit. 
-                                Esse molestias earum repellendus illum? Tempora nam, porro 
-                                dolor enim magnam modi repudiandae quo soluta delectus possimus 
-                                molestiae cupiditate aperiam. Ratione, alias suscipit. Saepe 
-                                cumque fuga provident aperiam eaque mollitia, esse vel eius 
-                                quisquam voluptate illo ut similique obcaecati architecto 
-                                quae doloribus exercitationem ab recusandae animi et 
-                                blanditiis quo culpa nobis iste! Ad quaerat quam ea maiores
-                                quidem suscipit molestiae recusandae nostrum quibusdam rerum 
-                                necessitatibus aperiam asperiores, ab veritatis harum aspernatur
-                                nisi voluptas maxime. Recusandae commodi, dolor repudiandae nesciunt 
-                                quia natus blanditiis, veritatis rem esse, adipisci voluptatibus labore ipsa ut cupiditate at!
+                                <p v-html="b1.isi"></p>
                             </div>
                         </q-card-section>
                     </q-card>
@@ -27,20 +16,16 @@
                 <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
                     <q-card flat>
                         <q-list class="q-mx-sm">
-                            <q-item class="q-mb-md">
+                            <q-item v-for="b2 in berita2" :key="b2" class="q-mb-md">
                                 <q-item-section thumbnail top>
-                                        <img src="https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg" alt="tau">
+                                        <img :src="'/storage/' + b2.gambar" alt="tau">
                                 </q-item-section>
                                 <q-item-section>
                                     <q-item-label>
-                                        <div>Lorem ipsum</div>
+                                        {{ b2.judul }}
                                     </q-item-label>
                                     <q-item-label section>
-                                        <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                                            Similique magnam incidunt possimus? Non quisquam, odio vero assumenda at ut sed.</div>
-                                    </q-item-label>
-                                    <q-item-label>
-                                        <div class="text-">sadsad</div>
+                                        <p v-html="b2.isi.substring(0,100)+'...'"></p>
                                     </q-item-label>
                                 </q-item-section>
                             </q-item>
@@ -53,27 +38,53 @@
                             <span class="text-h6">Trending</span>
                         </q-item>
                         <q-separator class="q-mb-md"/>
-                        <q-item class="q-mb-md">
+                        <q-item v-for="tr in trending" :key="tr" class="q-mb-md">
                             <q-item-section>
-                                <q-itemlabel class="text-h5">Lorem ipsum</q-itemlabel>
-                                <q-itemlabel>Lorem ipsum dolor, sit amet consectetur adipisicing elit. 
-                                    Praesentium, velit? Sunt tempore blanditiis sed. Laborum!</q-itemlabel>
+                                <q-itemlabel class="text-h5">{{ tr.judul }}</q-itemlabel>
+                                <q-itemlabel><p v-html="tr.isi.substring(0,100)+'...'"></p></q-itemlabel>
                             </q-item-section>
                         </q-item>
                     </q-list>
                 </div>
-                
-            </div> 
+
+            </div>
         </div>
     </q-page>
 </template>
 
 <script>
+import axios from 'axios';
 import layout from "../layout/layout.vue";
+import { onMounted, ref } from 'vue';
+
 export default {
     layout: layout,
+
+    setup() {
+        const berita1 = ref([])
+        const berita2 = ref([])
+        const trending = ref([])
+
+        function getberita() {
+            axios.get('/getberita').then((res) => {
+                berita1.value = res.data.berita1
+                berita2.value = res.data.berita2
+                trending.value = res.data.trending
+            })
+        }
+
+        onMounted(() => {
+            getberita()
+        })
+        return {
+            berita1,
+            berita2,
+            trending
+        }
+    }
+
 };
+
+
 </script>
 
-<style>
-</style>

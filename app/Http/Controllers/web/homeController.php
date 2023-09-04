@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
+use App\Models\berita;
+use App\Models\profile;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 
@@ -14,11 +18,6 @@ class homeController extends Controller
     public function show()
     {
         return Inertia::render('Home');
-    }
-
-    public function profile()
-    {
-        return Inertia::render('profile');
     }
 
 
@@ -47,6 +46,8 @@ class homeController extends Controller
             'email' => $request->email
         ]);
 
+
+
         return back();
     }
 
@@ -64,6 +65,45 @@ class homeController extends Controller
         ]);
     }
 
+    public function profile(){
+        $data = profile::first();
+        return inertia::render('profile', [
+            'profile' => $data
+        ]);
+    }
+
+    public function profileEditShow(){
+        $profile = profile::first();
+        return response()->json($profile);
+
+    }
+
+    public function userBioSimpan(Request $request){
+
+        $profile = profile::first();
+
+        $imageFilename = $profile->gambar;
+
+        if($imageFilename){
+            if (Storage::disk('public')->exists($imageFilename)){
+                Storage::disk('public')->delete($imageFilename);
+                $gambar = $request->file('gambar')->store('profile', 'public');
+            }else{
+                $gambar = $request->file('gambar')->store('profile', 'public');
+            }
+        }else{
+            $gambar = $request->file('gambar')->store('profile', 'public');
+        }
+
+        if($profile){
+            $profile->update([
+                'gambar' => $gambar,
+                'biodata' => $request->biodata
+            ]);
+        }
+
+    }
+
     public function userPost(Request $request)
     {
         $request->validate([
@@ -77,7 +117,6 @@ class homeController extends Controller
             'username' => $request->username,
             'password' => bcrypt($request->password),
             'email' => $request->email
-
         ]);
     }
 
@@ -94,5 +133,20 @@ class homeController extends Controller
             $hapus->delete();
         }
         return back();
+    }
+
+
+
+    public function getBerita(){
+        $berita1 = berita::limit(1)->get();
+        $berita2 = berita::latest()->get();
+        $trending = berita::get();
+
+        return response()->json([
+            'berita1' => $berita1,
+            'berita2' => $berita2,
+            'trending' => $trending
+        ]);
+
     }
 }

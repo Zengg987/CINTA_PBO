@@ -36,5 +36,7 @@ Route::middleware(['auth'])->group(function(){
 
     Route::get('/berita',[beritaController::class, 'index']);
     Route::post('/berita/simpan',[beritaController::class, 'beritaSimpan']);
-    Route::post('/berita/simpan',[beritaController::class, 'beritaGambar']);
+    Route::post('/berita/simpanGambar',[beritaController::class, 'beritaGambar']);
+    Route::get('/berita/edit/{id}', [beritaController::class, 'beritaEdit']);
+    Route::delete('/berita/delete/{id}', [beritaController::class, 'beritaDelete']);
 });

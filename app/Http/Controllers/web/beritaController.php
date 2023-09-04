@@ -10,36 +10,57 @@ use App\Models\berita;
 
 class beritaController extends Controller
 {
-    public function index(){
-        $berita=berita::latest()->get();
-        return inertia::render('berita',[
+    public function index()
+    {
+        $berita = berita::latest()->get();
+        return inertia::render('berita', [
             'berita' => $berita
         ]);
     }
-    public function beritaSimpan(Request $request){
+    public function beritaSimpan(Request $request)
+    {
         $request->validate([
             'judul' => 'required',
             'isi' => 'required'
-            
         ]);
+
         berita::updateOrCreate(['id' => $request->id], [
             'judul' => $request->judul,
             'isi' => $request->isi,
             'penulis' => Auth()->User()->name
         ]);
+
         return back();
     }
-public function beritaGambar(Request $request){
-    $request->validate([
-        'gambar'=>'required',
-    ]);
-    $gambar = $request->file('gambar')->store('berita', 'public');
-    if ($request->id) {
-        $upload = berita::find($request->id);
-        $upload->update([
-            'gambar' => $gambar
+    public function beritaGambar(Request $request)
+    {
+        $request->validate([
+            'gambar' => 'required',
         ]);
+        $gambar = $request->file('gambar')->store('berita', 'public');
+        if ($request->id) {
+            $upload = berita::find($request->id);
+            $upload->update([
+                'gambar' => $gambar
+            ]);
+        }
+        return back();
     }
-    return back();
-}
+
+    public function beritaEdit($id){
+
+        $data = berita::where('id', $id)->first();
+        return response()->json($data);
+
+    }
+
+    public function beritaDelete($id){
+
+        if ($id) {
+            $hapus = berita::find($id);
+            $hapus->delete();
+        }
+        return back();
+
+    }
 }

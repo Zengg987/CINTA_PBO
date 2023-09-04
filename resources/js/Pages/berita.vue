@@ -1,6 +1,12 @@
 <template>
     <q-page class="q-pa-md">
-        <q-btn @click="dialogBerita = true" label="input berita" icon="add" class="q-mb-sm" color="primary" />
+        <q-btn
+            @click="dialogBerita = true"
+            label="input berita"
+            icon="add"
+            class="q-mb-sm"
+            color="primary"
+        />
         <q-markup-table bordered separator="cell" wrap-cells>
             <thead>
                 <tr>
@@ -20,7 +26,10 @@
                         <p v-html="row.isi" />
                     </td>
                     <td>
-                        <q-img v-if="row.gambar" :src="/storage/ + row.gambar" />
+                        <q-img
+                            v-if="row.gambar"
+                            :src="/storage/ + row.gambar"
+                        />
                     </td>
                     <td>
                         {{ row.penulis }}
@@ -30,7 +39,11 @@
                             <q-icon round name="expand_more" />
                             <q-menu>
                                 <q-list dense>
-                                    <q-item clickable v-close-popup @click="inUpload(row.id)">
+                                    <q-item
+                                        clickable
+                                        v-close-popup
+                                        @click="inUpload(row.id)"
+                                    >
                                         <q-item-section side>
                                             <q-icon name="upload" />
                                         </q-item-section>
@@ -41,18 +54,24 @@
                                         </q-item-section>
                                     </q-item>
 
-                                    <q-item clickable v-close-popup>
+                                    <q-item
+                                        clickable
+                                        v-close-popup
+                                        @click="edit(row.id)"
+                                    >
                                         <q-item-section side>
                                             <q-icon name="edit" />
                                         </q-item-section>
                                         <q-item-section>
-                                            <q-item-label>
-                                                edit
-                                            </q-item-label>
+                                            <q-item-label> edit </q-item-label>
                                         </q-item-section>
                                     </q-item>
 
-                                    <q-item clickable v-close-popup>
+                                    <q-item
+                                        clickable
+                                        v-close-popup
+                                        @click="deleteConfirm(row.id)"
+                                    >
                                         <q-item-section side>
                                             <q-icon name="delete" />
                                         </q-item-section>
@@ -69,8 +88,12 @@
                 </tr>
             </tbody>
         </q-markup-table>
-        <q-dialog v-model="dialogBerita" transition-show="jump-right" transition-hide="jump-left">
-            <q-card style="width: 700px;">
+        <q-dialog
+            v-model="dialogBerita"
+            transition-show="jump-right"
+            transition-hide="jump-left"
+        >
+            <q-card style="width: 700px">
                 <q-toolbar>
                     <q-toolbar-title>Upload Gambar</q-toolbar-title>
                     <q-space />
@@ -78,11 +101,20 @@
                 </q-toolbar>
                 <q-card-section>
                     <q-form class="q-gutter-sm">
-                        <q-input outlined label="judul berita" v-model="form.judul" />
+                        <q-input
+                            outlined
+                            label="judul berita"
+                            v-model="form.judul"
+                        />
                         <q-editor v-model="form.isi" min-height="10rem" />
                         <div class="text-right">
-                            <q-btn  @click="simpan" label="simpan" />
-                            <q-btn @click="batal" label="batal" color="teal" class="q-mx-sm" />
+                            <q-btn @click="simpan" label="simpan" />
+                            <q-btn
+                                @click="batal"
+                                label="batal"
+                                color="teal"
+                                class="q-mx-sm"
+                            />
                         </div>
                     </q-form>
                     <q-form></q-form>
@@ -90,16 +122,41 @@
             </q-card>
         </q-dialog>
         <q-dialog v-model="dialogGambar">
-            <q-card style="width: 700px;">
+            <q-card style="width: 700px">
                 <q-card-section>
                     <q-form class="q-gutter-sm">
-                        <q-file class="q-mb-sm" outlined label="Upload img" v-model="filex.gambar"
-                            @input="filex.gambar = $event.target.files[0]" />
+                        <q-file
+                            class="q-mb-sm"
+                            outlined
+                            label="Upload img"
+                            v-model="filex.gambar"
+                            @input="filex.gambar = $event.target.files[0]"
+                        />
                         <div>
-                            <q-btn label="upload" color="primary" class="q-mx-xs" @click="upload" />
+                            <q-btn
+                                label="upload"
+                                color="primary"
+                                class="q-mx-xs"
+                                @click="upload"
+                            />
                             <q-btn label="batal" color="grey" @click="batal" />
                         </div>
                     </q-form>
+                </q-card-section>
+            </q-card>
+        </q-dialog>
+        <q-dialog v-model="dialogKonfirmDelete">
+            <q-card style="width: 500px">
+                <q-card-section>
+                    <p>Apakah anda yakin ingin menghapus data ini</p>
+                    <div>
+                        <q-btn label="ya,hapus" @click="hapus" color="red" />
+                        <q-btn
+                            label="tidak"
+                            @click="dialogKonfirmDelete = false"
+                            class="q-mx-xs"
+                        />
+                    </div>
                 </q-card-section>
             </q-card>
         </q-dialog>
@@ -108,35 +165,37 @@
 
 <script>
 import layout from "../layout/layout.vue";
-import { ref, reactive } from 'vue';
+import { ref, reactive } from "vue";
 import { router, useForm } from "@inertiajs/vue3";
+import axios from "axios";
 export default {
     layout: layout,
     props: {
-        berita: Array
+        berita: Array,
     },
     setup() {
-        const dialogGambar = ref(false)
-        const dialogBerita = ref(false)
+        const dialogGambar = ref(false);
+        const dialogBerita = ref(false);
+        const dialogKonfirmDelete = ref(false);
         const filex = useForm({
-            gambar: null
-        })
+            gambar: null,
+        });
         const form = reactive({
             id: "",
             judul: "",
             isi: "",
-
-        })
+        });
         function batal() {
-            form.id = "",
-            form.judul = "",
-            form.isi = "",
-            dialogBerita.value = false
-            dialogGambar.value = false
+            (form.id = ""),
+                (form.judul = ""),
+                (form.isi = ""),
+                (dialogBerita.value = false);
+            dialogGambar.value = false;
+            dialogKonfirmDelete.value = false;
         }
         function simpan() {
-            router.visit('/berita/simpan', {
-                method: 'post',
+            router.visit("/berita/simpan", {
+                method: "post",
                 data: {
                     id: form.id,
                     judul: form.judul,
@@ -145,48 +204,72 @@ export default {
                 preserveScroll: true,
                 preserveState: true,
                 onSuccess: () => {
-                    batal()
-                }
-            }
-            )
+                    batal();
+                },
+            });
         }
         function inUpload(id) {
-            form.id=id
-            dialogGambar.value = true
+            form.id = id;
+            dialogGambar.value = true;
         }
         function upload() {
-            console.log(filex.gambar)
-            router.visit('/berita/simpan', {
-                method: 'post',
+            router.visit("/berita/simpanGambar", {
+                method: "post",
                 data: {
                     id: form.id,
-                    gambar: filex.gambar
+                    gambar: filex.gambar,
                 },
                 forceFormData: true,
                 preserveScroll: true,
                 preserveState: true,
                 onSuccess: () => {
-                    batal()
+                    batal();
+                },
+            });
+        }
+
+        function edit(id) {
+            axios.get("/berita/edit/" + id).then((res) => {
+                form.id = res.data.id;
+                form.judul = res.data.judul;
+                form.isi = res.data.isi;
+                dialogBerita.value = true;
+            });
+        }
+
+        function deleteConfirm(id) {
+            form.id = id;
+            dialogKonfirmDelete.value = true;
+        }
+
+        function hapus() {
+            router.visit("/berita/delete/" + form.id, {
+                method: "delete",
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => {
+                    batal();
                 }
-            }
-            )
+            });
         }
 
         return {
-
             dialogBerita,
             dialogGambar,
+            dialogKonfirmDelete,
+            deleteConfirm,
+            hapus,
             form,
             filex,
             inUpload,
             batal,
             upload,
             simpan,
-            form
-        }
-    }
-
-}
+            form,
+            edit,
+        };
+    },
+};
 </script>
 
 <style></style>

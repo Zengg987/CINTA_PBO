@@ -78,31 +78,34 @@ class homeController extends Controller
 
     }
 
-    public function userBioSimpan(Request $request){
+    public function userBioSimpan(Request $request)
+{
+    $profile = Profile::first();
 
-        $profile = profile::first();
-
+    // Cek apakah ada file gambar baru yang dikirimkan dalam permintaan
+    if ($request->hasFile('gambar')) {
         $imageFilename = $profile->gambar;
 
-        if($imageFilename){
-            if (Storage::disk('public')->exists($imageFilename)){
-                Storage::disk('public')->delete($imageFilename);
-                $gambar = $request->file('gambar')->store('profile', 'public');
-            }else{
-                $gambar = $request->file('gambar')->store('profile', 'public');
-            }
-        }else{
-            $gambar = $request->file('gambar')->store('profile', 'public');
+        // Hapus gambar yang sudah ada jika ada
+        if ($imageFilename && Storage::disk('public')->exists($imageFilename)) {
+            Storage::disk('public')->delete($imageFilename);
         }
 
-        if($profile){
-            $profile->update([
-                'gambar' => $gambar,
-                'biodata' => $request->biodata
-            ]);
-        }
-
+        // Simpan gambar baru ke storage 'public'
+        $gambar = $request->file('gambar')->store('profile', 'public');
+    } else {
+        // Jika tidak ada file gambar yang dikirimkan, gunakan gambar yang sudah ada
+        $gambar = $profile->gambar;
     }
+
+    if ($profile) {
+        $profile->update([
+            'gambar' => $gambar,
+            'biodata' => $request->biodata
+        ]);
+    }
+}
+
 
     public function userPost(Request $request)
     {

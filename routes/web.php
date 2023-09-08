@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::get('/', [homeController::class,'show'])->name('login');
 Route::get('/profile', [homeController::class, 'profile']);
+Route::get('/profile/upImage', [homeController::class, 'upImage']);
+
 Route::post('/register', [homeController::class, 'registerPost']);
 Route::post('/login', [loginController::class, 'login']);
 Route::get('/logout', [loginController::class, 'logout']);

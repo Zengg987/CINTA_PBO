@@ -1,6 +1,6 @@
 <template>
     <q-layout view="hHh LpR fFf">
-        <q-header elevated class="bg-teal-14 text-white">
+        <q-header elevated class="bg-grey-14 text-white">
             <q-toolbar>
                 <q-btn v-if="$page.props.auth.user" dense flat round icon="menu" @click="toggleLeftDrawer" />
 
@@ -10,7 +10,7 @@
                             src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg"
                         />
                     </q-avatar>
-                    Kumpulan AMV
+                    TITLE
                 </q-toolbar-title>
                 <q-space />
                 <q-tabs inline-label class="text-white">
